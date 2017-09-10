@@ -34,7 +34,9 @@ var PushNotification = function () {
     this.handlers = {
       registration: [],
       notification: [],
-      error: []
+      error: [],
+      allowed: [],
+      disallowed: []
     };
 
     // require options parameter
@@ -47,7 +49,9 @@ var PushNotification = function () {
 
     // triggered on registration and notification
     var success = function success(result) {
-      if (result && typeof result.registrationId !== 'undefined') {
+      if (result === 'allowed') {
+        _this.emit('allowed');
+      } else if (result && typeof result.registrationId !== 'undefined') {
         _this.emit('registration', result);
       } else if (result && result.additionalData && typeof result.additionalData.actionCallback !== 'undefined') {
         var executeFuctionOrEmitEventByName = function executeFuctionOrEmitEventByName(functionName, context) {
@@ -77,6 +81,9 @@ var PushNotification = function () {
 
     // triggered on error
     var fail = function fail(msg) {
+      if (msg === 'disallowed') {
+        return _this.emit('disallowed');
+      }
       var e = typeof msg === 'string' ? new Error(msg) : msg;
       _this.emit('error', e);
     };

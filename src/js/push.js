@@ -19,6 +19,8 @@ class PushNotification {
       registration: [],
       notification: [],
       error: [],
+      allowed: [],
+      disallowed: []
     };
 
     // require options parameter
@@ -31,7 +33,9 @@ class PushNotification {
 
     // triggered on registration and notification
     const success = (result) => {
-      if (result && typeof result.registrationId !== 'undefined') {
+      if (result === 'allowed') {
+        this.emit('allowed');
+      } else if (result && typeof result.registrationId !== 'undefined') {
         this.emit('registration', result);
       } else if (result && result.additionalData &&
         typeof result.additionalData.actionCallback !== 'undefined') {
@@ -58,6 +62,9 @@ class PushNotification {
 
     // triggered on error
     const fail = (msg) => {
+      if (msg === 'disallowed') {
+        return _this.emit('disallowed');
+      }
       const e = (typeof msg === 'string') ? new Error(msg) : msg;
       this.emit('error', e);
     };
