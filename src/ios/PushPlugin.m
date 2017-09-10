@@ -339,6 +339,20 @@
             UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UserNotificationTypes categories:categories];
             [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
             [[UIApplication sharedApplication] registerForRemoteNotifications];
+
+            [[NSNotificationCenter defaultCenter] addObserverForName:UIApplicationDidBecomeActiveNotification
+                                                                                       object:nil
+                                                                                        queue:[NSOperationQueue mainQueue]
+                                                                                   usingBlock:^(NSNotification * _Nonnull note) {
+                                                                                       if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
+                                                                                           NSLog(@"User allowed Notifications for the App");
+                                                                                           [self successWithMessage:self.callbackId withMsg:@"allowed"];
+                                                                                       }
+                                                                                       else {
+                                                                                           NSLog(@"User disallowed Notifications for the App");
+                        //                                                                 [self failWithMessage:self.callbackId withMsg:@"disallowed" withError:Nil];
+                                                                                       }
+                                                                                   }];
         } else {
             [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
              (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
