@@ -334,7 +334,7 @@
 #endif
 
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+//#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
         if ([[UIApplication sharedApplication]respondsToSelector:@selector(registerUserNotificationSettings:)]) {
             UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UserNotificationTypes categories:categories];
             [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
@@ -344,23 +344,27 @@
                                                                                        object:nil
                                                                                         queue:[NSOperationQueue mainQueue]
                                                                                    usingBlock:^(NSNotification * _Nonnull note) {
-                                                                                       if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
-                                                                                           NSLog(@"User allowed Notifications for the App");
-                                                                                           [self successWithMessage:self.callbackId withMsg:@"allowed"];
-                                                                                       }
-                                                                                       else {
-                                                                                           NSLog(@"User disallowed Notifications for the App");
-                        //                                                                 [self failWithMessage:self.callbackId withMsg:@"disallowed" withError:Nil];
-                                                                                       }
-                                                                                   }];
+               if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
+                   NSLog(@"User allowed Notifications for the App");
+//                   [self successWithMessage:self.callbackId withMsg:@"allowed"];
+                   CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"allowed"];
+                   [pluginResult setKeepCallbackAsBool:YES];
+                   [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+               }
+               else {
+                   NSLog(@"User disallowed Notifications for the App");
+                   [self failWithMessage:self.callbackId withMsg:@"disallowed" withError:Nil];
+               }
+            }];
         } else {
             [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
              (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
         }
-#else
-        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
-         (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
-#endif
+//#else
+//        [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+//         (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
+//#endif
+
 
         //  GCM options
         [self setGcmSenderId: [iosOptions objectForKey:@"senderID"]];
