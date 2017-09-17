@@ -243,7 +243,10 @@ PushNotification.prototype.on = function(eventName, callback) {
 PushNotification.prototype.off = function (eventName, handle) {
     if (this._handlers.hasOwnProperty(eventName)) {
         var handleIndex = this._handlers[eventName].indexOf(handle);
-        if (handleIndex >= 0) {
+        if (handle === undefined) {
+            this._handlers[eventName] = [];
+        }
+        else if (handleIndex >= 0) {
             this._handlers[eventName].splice(handleIndex, 1);
         }
     }
