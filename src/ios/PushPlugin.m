@@ -344,9 +344,13 @@
                                                                                        object:nil
                                                                                         queue:[NSOperationQueue mainQueue]
                                                                                    usingBlock:^(NSNotification * _Nonnull note) {
-               if ([[UIApplication sharedApplication] isRegisteredForRemoteNotifications]) {
+               BOOL enabled = NO;
+               id<UIApplicationDelegate> appDelegate = [UIApplication sharedApplication].delegate;
+               if ([appDelegate respondsToSelector:@selector(userHasRemoteNotificationsEnabled)]) {
+                   enabled = [appDelegate performSelector:@selector(userHasRemoteNotificationsEnabled)];
+               }
+               if (enabled) {
                    NSLog(@"User allowed Notifications for the App");
-//                   [self successWithMessage:self.callbackId withMsg:@"allowed"];
                    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"allowed"];
                    [pluginResult setKeepCallbackAsBool:YES];
                    [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
