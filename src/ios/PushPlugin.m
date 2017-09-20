@@ -344,6 +344,7 @@
                                                                                        object:nil
                                                                                         queue:[NSOperationQueue mainQueue]
                                                                                    usingBlock:^(NSNotification * _Nonnull note) {
+               [NSThread sleepForTimeInterval:0.1f];
                BOOL enabled = NO;
                id<UIApplicationDelegate> appDelegate = [UIApplication sharedApplication].delegate;
                if ([appDelegate respondsToSelector:@selector(userHasRemoteNotificationsEnabled)]) {
